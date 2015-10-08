@@ -97,6 +97,7 @@ namespace JoeriBekker.PuttyTunnelManager.Forms
             // General
             this.sessionName.Text = session.Name;
             this.storeTunnelsSeparate.Checked = session.UsePtmForTunnels;
+			this.autoOpenCB.Checked = session.AutoOpenTunnels;
 
             // SSH
             this.hostname.Text = session.Hostname;
@@ -286,34 +287,47 @@ namespace JoeriBekker.PuttyTunnelManager.Forms
         {
             if (this.selectedSession != null)
             {
-                if (sender == this.hostname)
-                    this.selectedSession.Hostname = this.hostname.Text;
-                else if (sender == this.port)
-                    this.selectedSession.Port = Int32.Parse(this.port.Text);
-                else if (sender == this.username)
-                    this.selectedSession.Username = this.username.Text;
-                else if (sender == this.compression)
-                    this.selectedSession.Compression = this.compression.Checked;
-                else if (sender == this.localPortsAcceptAll)
-                    this.selectedSession.LocalPortsAcceptAll = this.localPortsAcceptAll.Checked;
-                else if (sender == this.sessionName)
-                {
-                    this.selectedSession.Name = this.sessionName.Text;
-                    this.selectedSession.Serialize();
+				if (sender == this.hostname)
+					this.selectedSession.Hostname = this.hostname.Text;
+				else if (sender == this.port)
+					this.selectedSession.Port = Int32.Parse(this.port.Text);
+				else if (sender == this.username)
+					this.selectedSession.Username = this.username.Text;
+				else if (sender == this.compression)
+					this.selectedSession.Compression = this.compression.Checked;
+				else if (sender == this.localPortsAcceptAll)
+					this.selectedSession.LocalPortsAcceptAll = this.localPortsAcceptAll.Checked;
+				else if (sender == this.sessionName)
+				{
+					this.selectedSession.Name = this.sessionName.Text;
+					this.selectedSession.Serialize();
 
-                    Core.Instance().Refresh();
-                    this.UpdateSessions();
+					Core.Instance().Refresh();
+					this.UpdateSessions();
 
-                    return;
-                }
+					return;
+				}
 
                 this.selectedSession.Serialize();
             }
         }
 
-        private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            this.Field_Leave(this.ActiveControl, null);
-        }
-    }
+		private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			this.Field_Leave(this.ActiveControl, null);
+		}
+
+		private void autoOpenCB_CheckedChanged(object sender, EventArgs e)
+		{
+			if (this.selectedSession == null)
+			{
+				autoOpenCB.Checked = false;
+			}
+			else
+			{
+				this.selectedSession.AutoOpenTunnels = autoOpenCB.Checked;
+				this.selectedSession.Serialize();
+			}
+		}
+	}
 }

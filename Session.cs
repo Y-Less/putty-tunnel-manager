@@ -36,7 +36,8 @@ namespace JoeriBekker.PuttyTunnelManager
         public static string PUTTY_REGISTRY_KEY_SESSION_USERNAME            = "Username";
         public static string PUTTY_REGISTRY_KEY_SESSION_PORTNUMBER          = "PortNumber";
         public static string PUTTY_REGISTRY_KEY_SESSION_COMPRESSION         = "Compression";
-        public static string PUTTY_REGISTRY_KEY_SESSION_LOCALPORTACCEPTALL  = "LocalPortAcceptAll";
+		public static string PUTTY_REGISTRY_KEY_SESSION_LOCALPORTACCEPTALL  = "LocalPortAcceptAll";
+		public static string PUTTY_REGISTRY_KEY_SESSION_AUTOOPENTUNNELS     = "AutoOpenTunnels";
 
         public static string PTM_REGISTRY_KEY_SESSION_PORTFORWARDINGS       = "PortForwardings";
         public static string PTM_REGISTRY_KEY_SESSION_USEPTMFORTUNNELS      = "UsePtmForTunnels";
@@ -47,7 +48,8 @@ namespace JoeriBekker.PuttyTunnelManager
         private int port;
         private bool compression;
         private bool localPortsAcceptAll;
-        private List<Tunnel> tunnels;
+		private bool autoOpen;
+		private List<Tunnel> tunnels;
 
         private bool usePtmForTunnels;
         private PuttyLink puttyLink;
@@ -64,6 +66,7 @@ namespace JoeriBekker.PuttyTunnelManager
             this.port = port;
             this.compression = false;
             this.localPortsAcceptAll = false;
+			this.autoOpen = false;
             this.tunnels = new List<Tunnel>();
 
             this.usePtmForTunnels = false;
@@ -134,11 +137,17 @@ namespace JoeriBekker.PuttyTunnelManager
             set { this.localPortsAcceptAll = value; }
         }
 
-        public bool UsePtmForTunnels
-        {
-            get { return this.usePtmForTunnels; }
-            set { this.usePtmForTunnels = value; }
-        }
+		public bool UsePtmForTunnels
+		{
+			get { return this.usePtmForTunnels; }
+			set { this.usePtmForTunnels = value; }
+		}
+
+		public bool AutoOpenTunnels
+		{
+			get { return this.autoOpen; }
+			set { this.autoOpen = value; }
+		}
 
         public List<Tunnel> Tunnels
         {
@@ -197,7 +206,8 @@ namespace JoeriBekker.PuttyTunnelManager
             puttySessionKey.SetValue(PUTTY_REGISTRY_KEY_SESSION_PORTNUMBER, this.port, RegistryValueKind.DWord);
             puttySessionKey.SetValue(PUTTY_REGISTRY_KEY_SESSION_USERNAME, this.username, RegistryValueKind.String);
             puttySessionKey.SetValue(PUTTY_REGISTRY_KEY_SESSION_COMPRESSION, this.compression, RegistryValueKind.DWord);
-            puttySessionKey.SetValue(PUTTY_REGISTRY_KEY_SESSION_LOCALPORTACCEPTALL, this.localPortsAcceptAll, RegistryValueKind.DWord);
+			puttySessionKey.SetValue(PUTTY_REGISTRY_KEY_SESSION_LOCALPORTACCEPTALL, this.localPortsAcceptAll, RegistryValueKind.DWord);
+			puttySessionKey.SetValue(PUTTY_REGISTRY_KEY_SESSION_AUTOOPENTUNNELS, this.autoOpen, RegistryValueKind.DWord);
 
             StringBuilder buffer = new StringBuilder();
             foreach (Tunnel tunnel in this.Tunnels)
@@ -234,7 +244,8 @@ namespace JoeriBekker.PuttyTunnelManager
 
             session.Username = puttySessionKey.GetValue(PUTTY_REGISTRY_KEY_SESSION_USERNAME, "").ToString();
             session.Compression = puttySessionKey.GetValue(PUTTY_REGISTRY_KEY_SESSION_COMPRESSION, 0).Equals(1);
-            session.LocalPortsAcceptAll = puttySessionKey.GetValue(PUTTY_REGISTRY_KEY_SESSION_LOCALPORTACCEPTALL, 0).Equals(1);
+			session.LocalPortsAcceptAll = puttySessionKey.GetValue(PUTTY_REGISTRY_KEY_SESSION_LOCALPORTACCEPTALL, 0).Equals(1);
+			session.AutoOpenTunnels = puttySessionKey.GetValue(PUTTY_REGISTRY_KEY_SESSION_AUTOOPENTUNNELS, 0).Equals(1);
 
             string ptmKeyPath = PuttyTunnelManagerSettings.PTM_REGISTRY_KEYPATH_SESSIONS + @"\" + keyName;
             RegistryKey ptmSessionKey = Registry.CurrentUser.OpenSubKey(ptmKeyPath);

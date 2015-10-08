@@ -63,7 +63,16 @@ namespace JoeriBekker.PuttyTunnelManager
                 MessageBox.Show("An instance of " + Application.ProductName + " is already running.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            TrayIcon = new TrayIcon();
+			// Load all the sessions instantly, and start some.
+			Core c = Core.Instance();
+			foreach (Session s in c.Sessions)
+			{
+				if (s.AutoOpenTunnels)
+				{
+					s.Open();
+				}
+			}
+			TrayIcon = new TrayIcon();
 
             Application.Run();
             TrayIcon = null;

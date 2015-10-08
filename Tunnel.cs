@@ -92,7 +92,8 @@ namespace JoeriBekker.PuttyTunnelManager
             string destination = "";
             int destinationPort = 0;
 
-            if (parts.Length > 1)
+			// Empty data may look like "D100=" instead of just "D100"
+            if (parts.Length > 1 && parts[1].Length != 0)
             {
                 destination = parts[1];
                 destinationPort = Int32.Parse(parts[2]);
