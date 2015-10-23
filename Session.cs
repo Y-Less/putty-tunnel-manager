@@ -183,7 +183,7 @@ namespace JoeriBekker.PuttyTunnelManager
 
                 foreach (IPEndPoint ipEndPoint in ipEndPoints)
                 {
-                    if (ipEndPoint.Port == tunnel.SourcePort)
+                    if (tunnel.Source == "" && ipEndPoint.Port == tunnel.SourcePort)
                     {
                         throw new PortAlreadyInUseException(tunnel);
                     }

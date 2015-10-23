@@ -72,10 +72,18 @@ namespace JoeriBekker.PuttyTunnelManager
 					s.Open();
 				}
 			}
+			AppDomain currentDomain = AppDomain.CurrentDomain;
+			currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
 			TrayIcon = new TrayIcon();
 
-            Application.Run();
+			Application.Run();
             TrayIcon = null;
+        }
+
+        static void MyHandler(object sender, UnhandledExceptionEventArgs args)
+        {
+            Exception e = (Exception)args.ExceptionObject;
+            MessageBox.Show(e.ToString(), "Exception");
         }
     }
 }

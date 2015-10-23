@@ -39,16 +39,29 @@ namespace JoeriBekker.PuttyTunnelManager
         private string destination;
         private int destinationPort;
         private TunnelType type;
+		private string source;
 
-        public Tunnel(Session session, int sourcePort, string destination, int destinationPort, TunnelType type)
-        {
-            this.session = session;
+		public Tunnel(Session session, string source, int sourcePort, string destination, int destinationPort, TunnelType type)
+		{
+			this.session = session;
 
-            this.sourcePort = sourcePort;
-            this.destination = destination;
-            this.destinationPort = destinationPort;
-            this.type = type;
-        }
+			this.sourcePort = sourcePort;
+			this.destination = destination;
+			this.destinationPort = destinationPort;
+			this.type = type;
+			this.source = source;
+		}
+
+		public Tunnel(Session session, int sourcePort, string destination, int destinationPort, TunnelType type)
+		{
+			this.session = session;
+
+			this.sourcePort = sourcePort;
+			this.destination = destination;
+			this.destinationPort = destinationPort;
+			this.type = type;
+			this.source = "";
+		}
 
         public int SourcePort
         {
@@ -86,18 +99,23 @@ namespace JoeriBekker.PuttyTunnelManager
 
         public static Tunnel Load(Session session, string data)
         {
-            string[] parts = data.Substring(1).Split('=', ':');
+			string [] srcdest = data.Substring(1).Split('=');
+			string [] src = srcdest[0].Split(':');
 
-            int sourcePort = Int32.Parse(parts[0]);
+            int sourcePort = Int32.Parse(src[src.Length - 1]);
             string destination = "";
             int destinationPort = 0;
 
 			// Empty data may look like "D100=" instead of just "D100"
-            if (parts.Length > 1 && parts[1].Length != 0)
-            {
-                destination = parts[1];
-                destinationPort = Int32.Parse(parts[2]);
-            }
+            if (src.Length > 1)
+			{
+				string [] dst = srcdest[1].Split(':');
+				if (dst.Length > 1)
+				{
+					destination = dst[0];
+					destinationPort = Int32.Parse(dst[1]);
+				}
+			}
 
             TunnelType type;
             switch (data.Substring(0, 1))
@@ -108,7 +126,7 @@ namespace JoeriBekker.PuttyTunnelManager
                 case "D": type = TunnelType.DYNAMIC; break;
             }
 
-            return new Tunnel(session, sourcePort, destination, destinationPort, type);
+            return new Tunnel(session, src.Length == 2 ? src[0] : "", sourcePort, destination, destinationPort, type);
         }
 
         public override bool Equals(object obj)
@@ -123,6 +141,7 @@ namespace JoeriBekker.PuttyTunnelManager
                 return (this.session == tunnel.Session &&
                     this.destination == tunnel.Destination &&
                     this.destinationPort == tunnel.DestinationPort &&
+					this.Source == tunnel.Source &&
                     this.sourcePort == tunnel.SourcePort &&
                     this.type == tunnel.Type
                 );
@@ -134,5 +153,29 @@ namespace JoeriBekker.PuttyTunnelManager
             // TODO: This should be calculated based on the equals stuff that is now done in the equals method.
             return base.GetHashCode();
         }
-    }
+
+		public string Source
+		{
+			get
+			{
+				return this.source;
+			}
+		}
+
+		public string LongConnectionString
+		{
+			get
+			{
+				return this.source + (this.source == "" ? "" : ":") + this.sourcePort + ":" + this.destination + ":" + this.destinationPort;
+			}
+		}
+
+		public string ShortConnectionString
+		{
+			get
+			{
+				return "" + this.sourcePort;
+			}
+		}
+	}
 }

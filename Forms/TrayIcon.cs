@@ -101,7 +101,7 @@ namespace JoeriBekker.PuttyTunnelManager.Forms
                 }
                 catch (PortAlreadyInUseException ex)
                 {
-                    MessageBox.Show("Cannot start " + ex.Tunnel.Session.Name + ". Port " + ex.Tunnel.SourcePort + " is already in use.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Cannot start " + ex.Tunnel.Session.Name + ". Port " + (ex.Tunnel.Source == "" ? "" : ex.Tunnel.Source + ":") + ex.Tunnel.SourcePort + " is already in use.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 catch (PlinkNotFoundException)
                 {

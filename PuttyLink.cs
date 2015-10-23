@@ -94,13 +94,13 @@ namespace JoeriBekker.PuttyTunnelManager
                     switch (tunnel.Type)
                     {
                         case TunnelType.LOCAL:
-                            args.Append(" -L " + tunnel.SourcePort + ":" + tunnel.Destination + ":" + tunnel.DestinationPort);
+							args.Append(" -L " + tunnel.LongConnectionString);
                             break;
                         case TunnelType.REMOTE:
-                            args.Append(" -R " + tunnel.SourcePort + ":" + tunnel.Destination + ":" + tunnel.DestinationPort);
+							args.Append(" -R " + tunnel.LongConnectionString);
                             break;
                         case TunnelType.DYNAMIC:
-                            args.Append(" -D " + tunnel.SourcePort);
+							args.Append(" -D " + tunnel.ShortConnectionString);
                             break;
                     }
                 }
